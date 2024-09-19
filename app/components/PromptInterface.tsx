@@ -1,3 +1,6 @@
+import React, { useState } from "react";
+
+
 export default function PromptInterface() {
   return (
     <div className="h-full flex justify-center gap-24 pt-48">
