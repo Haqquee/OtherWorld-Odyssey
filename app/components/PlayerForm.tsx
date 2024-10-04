@@ -19,7 +19,6 @@ export default function PlayerForm({ onSubmit }: PlayerFormProps) {
     }
   };
 
-
 return(
   <div className="min-h-screen flex justify-center items-center w=1/2">  
     <form onSubmit={handleSubmit} className="">
