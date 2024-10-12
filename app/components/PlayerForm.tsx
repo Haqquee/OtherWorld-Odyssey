@@ -8,7 +8,7 @@ interface PlayerFormProps {
 export default function PlayerForm({ onSubmit }: PlayerFormProps) {
   const [playerName, setPlayerName] = useState<string>('');
   const [filesList, setFilesList] = useState<string[]>([]);
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  // const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [selectedAdventure, setSelectedAdventure] = useState<string | null>(null);
   const [adventureParams, setAdventureParams] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
@@ -33,7 +33,7 @@ export default function PlayerForm({ onSubmit }: PlayerFormProps) {
   }, []);
 
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!playerName.trim()) {
@@ -44,6 +44,33 @@ export default function PlayerForm({ onSubmit }: PlayerFormProps) {
     if (!selectedAdventure && !uploadedFile) {
       alert("Please select an adventure.")
       return;
+    }
+
+    const formData = new FormData();
+    formData.append('player_name', playerName);
+    formData.append('custom_params', adventureParams);
+    
+    if (uploadedFile) {
+      formData.append('uploaded_file', uploadedFile);
+    } else {
+      formData.append('adventure_name', selectedAdventure);
+    }
+
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/initialize_adventure", {
+        method: 'POST', 
+        body: formData,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        alert('Generating adventure')
+      }
+      else {
+        console.log("Error generating adventure", res.statusText);
+      }
+    } catch (err) {
+      console.log("Error generating Aadventrue, err");
     }
 
     onSubmit(playerName, selectedAdventure, uploadedFile, adventureParams);

@@ -3,7 +3,7 @@ from llama_index.core import SimpleDirectoryReader, VectorStoreIndex
 from models import embedding_model
 from llama_index.core import Settings
 
-lit_directory = "./Codex/Literature/" #directory where all the user's literature is stored
+lit_directory = "./Codex/Uploaded-Adventures/" #directory where all the user's literature is stored
 
 def list_available_lit(directory=lit_directory):
     files = os.listdir(directory)

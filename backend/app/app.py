@@ -1,10 +1,9 @@
 import os
 from game_master import GameMaster
 from index import list_available_lit, build_index
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Form, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-
 
 app = FastAPI()
 origins = [
@@ -23,7 +22,7 @@ app.add_middleware(
 class AdventureParams(BaseModel):
   player_name: str
   adventure_name: str
-  # adventure_params: str
+  custom_params: str
   # adventure_difficulty: str
 
 class PlayerInput(BaseModel):
@@ -55,11 +54,12 @@ async def init_adventure(adventure_params: AdventureParams):
   
   player_name = adventure_params.player_name
   adventure_name = adventure_params.adventure_name
+  custom_params = adventure_params.custom_params
 
   index = build_index(adventure_name)
   game_master = GameMaster(index)
 
-  response = game_master.chat_engine.chat(f"Start the game with Player named {player_name} in the world of {adventure_name}.")
+  response = game_master.chat_engine.chat(f"Start the game with Player named {player_name} in the world of {adventure_name}. Additional parameters for the adventure: {custom_params}.")
   return {"output": response}
 
 @app.post("/api/generate_llm_response")
