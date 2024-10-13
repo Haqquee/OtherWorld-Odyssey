@@ -40,6 +40,8 @@ class ImageResponse(BaseModel):
 
 game_master = None
 current_player = None
+current_adventure = None
+current_params = None
 
 @app.get("/api/get_adventures")
 async def get_adventures():
@@ -48,19 +50,35 @@ async def get_adventures():
 @app.post("/api/initialize_adventure")
 async def init_adventure(adventure_params: AdventureParams):
   global game_master
+  global current_player
+  global current_adventure
+  global current_params
 
-  if game_master:
-    raise HTTPException(status_code=400, detail=f"An adventure is already in progress with player: {current_player}")
-  
-  player_name = adventure_params.player_name
-  adventure_name = adventure_params.adventure_name
-  custom_params = adventure_params.custom_params
+  #if game_master:
+  #  raise HTTPException(status_code=400, detail=f"An adventure is already in progress with player: {current_player}")
 
-  index = build_index(adventure_name)
+  current_player = adventure_params.player_name
+  current_adventure = adventure_params.adventure_name
+  current_params = adventure_params.custom_params
+
+  index = build_index(current_adventure)
   game_master = GameMaster(index)
 
-  response = game_master.chat_engine.chat(f"Start the game with Player named {player_name} in the world of {adventure_name}. Additional parameters for the adventure: {custom_params}.")
-  return {"output": response}
+  if game_master:
+    return({"output": "Built index successfully."})
+  else:
+    return({"output": "Failed to build index."})
+
+@app.get("/api/start_adventure")
+async def generate_start_response():
+  global game_master
+  global current_player
+  global current_adventure
+  global current_params
+
+  response = game_master.chat_engine.chat(f"Start the game with Player named {current_player} in the world of {current_adventure}. Additional parameters for the adventure: {current_params}.")
+  return {"output": str(response)}
+
 
 @app.post("/api/generate_llm_response")
 async def generate_llm_response(player_input: PlayerInput):
@@ -76,6 +94,24 @@ def generate_image_response(image_desc: ImageDescription):
 
 def conclude_adventure():
   return None
+
+@app.delete("/api/reset_state")
+async def reset_state():
+    global game_master
+    global current_player
+    global current_adventure
+    global current_params
+
+    game_master = None
+    current_player = None
+    current_adventure = None
+    current_params = None
+
+    return{"Output": "State reset."}
+
+
+
+  
 
 
 """

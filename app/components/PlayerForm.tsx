@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 
 interface PlayerFormProps {
-  onSubmit: (playerName: string, selectedAdventure: string | null, uploadedFile: File | null, adventureParams: string) => void;
+  onSubmit: (playerName: string, selectedAdventure: string | null, adventureParams: string) => void;
 }
 
 export default function PlayerForm({ onSubmit }: PlayerFormProps) {
@@ -10,13 +10,12 @@ export default function PlayerForm({ onSubmit }: PlayerFormProps) {
   const [filesList, setFilesList] = useState<string[]>([]);
   // const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [selectedAdventure, setSelectedAdventure] = useState<string | null>(null);
-  const [adventureParams, setAdventureParams] = useState<string>('');
+  const [adventureParams, setAdventureParams] = useState<string>('None');
   const [loading, setLoading] = useState<boolean>(true);
-
-  //const [adventureParams, setAdventureParams] = useState<>
 
   useEffect(() => {
     async function fetchFiles() {
+      setLoading(true);
       try {
         const res = await fetch("http://127.0.0.1:8000/api/get_adventures");
         const data = await res.json();
@@ -40,26 +39,24 @@ export default function PlayerForm({ onSubmit }: PlayerFormProps) {
       alert("Please enter a name")
       return;
     }
-
-    if (!selectedAdventure && !uploadedFile) {
+    
+    if (!selectedAdventure) {
       alert("Please select an adventure.")
       return;
-    }
-
-    const formData = new FormData();
-    formData.append('player_name', playerName);
-    formData.append('custom_params', adventureParams);
-    
-    if (uploadedFile) {
-      formData.append('uploaded_file', uploadedFile);
-    } else {
-      formData.append('adventure_name', selectedAdventure);
     }
 
     try {
       const res = await fetch("http://127.0.0.1:8000/api/initialize_adventure", {
         method: 'POST', 
-        body: formData,
+        headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          'player_name': playerName,
+          'adventure_name': selectedAdventure,
+          'custom_params': adventureParams,
+        })
       });
 
       if (res.ok) {
@@ -70,10 +67,10 @@ export default function PlayerForm({ onSubmit }: PlayerFormProps) {
         console.log("Error generating adventure", res.statusText);
       }
     } catch (err) {
-      console.log("Error generating Aadventrue, err");
+      console.log("Error generating adventure, err");
     }
 
-    onSubmit(playerName, selectedAdventure, uploadedFile, adventureParams);
+    onSubmit(playerName, selectedAdventure, adventureParams);
   }
 
 return(
@@ -105,18 +102,7 @@ return(
             ))}
           </select>
         </div>
-        <div className="pb-5">
-          <label>Or upload a new adventure</label>
-          <input className=" text-yellow-400"
-            type="file" 
-            onChange={(e) => {
-              const files = e.target.files;
-              if (files && files.length > 0) {
-                setUploadedFile(files[0]);
-              }
-            }}
-          />
-        </div>
+        
         <div className="pb-5">
           <input
             type="text"
