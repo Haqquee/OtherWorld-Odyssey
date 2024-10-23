@@ -5,6 +5,8 @@ from fastapi import FastAPI, HTTPException, Form, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from image import test_image
+
 app = FastAPI()
 origins = [
     "http://localhost:3000",  
@@ -89,8 +91,12 @@ async def generate_llm_response(player_input: PlayerInput):
   response = game_master.chat_engine.chat(f"Player Response: {player_response}")
   return {"output": str(response)}
 
+@app.post("/api/generate_image_response")
 def generate_image_response(image_desc: ImageDescription):
-  return None
+  ###########################
+
+  ###########################
+  return {"base64": test_image}
 
 def conclude_adventure():
   return None

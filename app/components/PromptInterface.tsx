@@ -1,11 +1,14 @@
+import { error } from "console";
 import React, { useEffect, useState } from "react";
 
 export default function PromptInterface() {
 
   const [playerInput, setPlayerInput] = useState<string>('');
-  const [scenarioText, setScenarioText] = useState<string[]>([]);
+  const [scenarioText, setScenarioText] = useState<any[]>([]);
+  const [scenarioImage, setScenarioImage] = useState('');
   const [adventureLoading, setAdventureLoading] = useState<boolean>(false);
   const [textLoading, setTextLoading] = useState<boolean>(false);
+  const [imageLoading, setImageLoading] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -54,6 +57,35 @@ export default function PromptInterface() {
     }
   }
 
+  const generateImage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setImageLoading(true);
+
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/generate_image_response", {
+        method: 'POST', 
+        headers: {
+          "Content-Type": "Application/JSON",
+        },
+        body: JSON.stringify({ image_description: playerInput })
+      });
+      
+      const data = await res.json();
+      const image = {
+        type: "image",
+        src: `data:image/png;base64,${data.base64}`,
+      };
+
+      setScenarioText((prevText) => [...prevText, image]);
+
+    } catch (err) {
+      console.error("Error fetching image response: ", err);
+
+    } finally {
+      setImageLoading(false);
+    }
+  }
+
   return (
     <div className="h-screen fixed flex justify-center gap-24 pt-48">
     {adventureLoading && (
@@ -70,10 +102,12 @@ export default function PromptInterface() {
             onChange={(e) => setPlayerInput(e.target.value)}
             className="rounded-md bg-black bg-opacity-50 text-white text-xl border-2 p-2 mb-4"  
           />
-          <button className="bg-white text-black rounded-md p-2 w-1/4 text-l hover:bg-yellow-400 hover:scale-105">Submit</button>
-
+          <button type="submit" className="bg-white text-black rounded-md p-2 w-1/4 text-l hover:bg-yellow-400 hover:scale-105">Action</button>
+          <button type="button" onClick={generateImage} className="bg-white text-black rounded-md p-2 w-1/4 text-l hover:bg-yellow-400 hover:scale-105">Perception</button>
         </form>
       </div>
+
+      
 
       <div className="h-screen w-2/3 bg-page_background bg-repeat-y bg-local p-10 text-black overflow-y-auto">
       <h2 className="text-3xl mb-4"></h2>
@@ -82,7 +116,16 @@ export default function PromptInterface() {
       {scenarioText.length > 0 ? (
         scenarioText.map((text, index) => (
         <div key={index} className="mb-6">
-          <p className="text-xl leading-loose">{text}</p>
+          {text.type === "image" ? (
+            <div>
+              <img
+                src={text.src}
+                alt={`Scenario image ${index}`}
+                className="w-full h-auto object-cover"/>
+            </div>
+          ) : (
+            <p className="text-xl leading-loose">{text}</p>
+          )}
         </div>
         ))
       ) : (

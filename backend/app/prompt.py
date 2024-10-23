@@ -12,6 +12,24 @@ game_context = (
   """
 )
 
+query_classifier = (
+  """
+  You are a query classifier in a game.
+  You will take a player's action as an input, your only job is to say whether or not the user's action involves observation, nothing else.
+  For example if the user says "Look around the room", then the action involves observation. 
+  For example if the user says "Walk towards the house", the the action does not involve observation.
+  You will respond with 'image' in case it involves observation, or 'text' if it does not.
+  """
+)
+
+text_to_image_prompt = (
+  """
+  You will be give a conversation within a story where you are the main character.
+  You will create a short description of the current setting/environment that you are in.
+  That is your only job, and you will not respond with anything else.
+  """
+)
+
 
 prompt_template_str = (
   """

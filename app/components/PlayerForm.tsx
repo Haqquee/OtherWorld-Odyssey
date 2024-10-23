@@ -12,6 +12,7 @@ export default function PlayerForm({ onSubmit }: PlayerFormProps) {
   const [selectedAdventure, setSelectedAdventure] = useState<string | null>(null);
   const [adventureParams, setAdventureParams] = useState<string>('None');
   const [loading, setLoading] = useState<boolean>(true);
+  const [adventureLoading, setAdventureLoading] = useState<boolean>(false);
 
   useEffect(() => {
     async function fetchFiles() {
@@ -31,7 +32,6 @@ export default function PlayerForm({ onSubmit }: PlayerFormProps) {
     fetchFiles();
   }, []);
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -45,6 +45,7 @@ export default function PlayerForm({ onSubmit }: PlayerFormProps) {
       return;
     }
 
+    setAdventureLoading(true);
     try {
       const res = await fetch("http://127.0.0.1:8000/api/initialize_adventure", {
         method: 'POST', 
@@ -61,7 +62,8 @@ export default function PlayerForm({ onSubmit }: PlayerFormProps) {
 
       if (res.ok) {
         const data = await res.json();
-        alert('Generating adventure')
+        setAdventureLoading(false);
+        
       }
       else {
         console.log("Error generating adventure", res.statusText);
@@ -75,6 +77,12 @@ export default function PlayerForm({ onSubmit }: PlayerFormProps) {
 
 return(
   <div className="min-h-screen flex justify-center items-center w=1/2">  
+    {adventureLoading && (
+      <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center">
+      <div className="animate-spin rounded-full h-32 w-32 border-t-4 border-b-4 border-yellow-400"></div>
+      <p className="ml-4 text-yellow-400 text-2xl">Loading Index...</p>
+      </div>
+    )}
     <form onSubmit={handleSubmit} className="">
       <h2 className="text-5xl">Enter your details to start the adventure</h2>
         <div className="py-5">
