@@ -57,7 +57,32 @@ export default function PromptInterface() {
       }
     }
   }
+  const generateImage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setImageLoading(true);
 
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/generate_image_response", {
+        method: 'GET', 
+      });
+      
+      const data = await res.json();
+      const image = {
+        type: "image",
+        src: `data:image/png;base64,${data.base64}`,
+      };
+
+      setScenarioText((prevText) => [...prevText, image]);
+
+    } catch (err) {
+      console.error("Error fetching image response: ", err);
+
+    } finally {
+      setImageLoading(false);
+    }
+  }
+
+  {/*
   const generateImage = async (e: React.FormEvent) => {
     e.preventDefault();
     setImageLoading(true);
@@ -86,6 +111,8 @@ export default function PromptInterface() {
       setImageLoading(false);
     }
   }
+    */}
+  
 
   return (
     <div className="h-screen fixed flex justify-center gap-24 pt-48">
@@ -122,7 +149,7 @@ export default function PromptInterface() {
               <img
                 src={text.src}
                 alt={`Scenario image ${index}`}
-                className="w-full h-auto object-cover grayscale border-8 border-black border-double scale-75"/>
+                className="w-full h-auto object-cover grayscale border-8 border-black border-double scale-100"/>
             </div>
           ) : (
             <p className="text-xl leading-loose">{text}</p>
@@ -133,6 +160,11 @@ export default function PromptInterface() {
         <p className="text-xl leading-loose"></p>
       )}
       {textLoading && (
+        <div className="">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-4 border-b-4 border-black"></div>
+        </div>
+      )}
+      {imageLoading && (
         <div className="">
         <div className="animate-spin rounded-full h-32 w-32 border-t-4 border-b-4 border-black"></div>
         </div>

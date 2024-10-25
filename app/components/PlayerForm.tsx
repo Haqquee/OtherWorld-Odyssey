@@ -2,14 +2,14 @@
 import { useState, useEffect } from "react";
 
 interface PlayerFormProps {
-  onSubmit: (playerName: string, selectedAdventure: string | null, adventureParams: string) => void;
+  onSubmit: (playerName: string, selectedAdventure: string, adventureParams: string) => void;
 }
 
 export default function PlayerForm({ onSubmit }: PlayerFormProps) {
   const [playerName, setPlayerName] = useState<string>('');
   const [filesList, setFilesList] = useState<string[]>([]);
   // const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [selectedAdventure, setSelectedAdventure] = useState<string | null>(null);
+  const [selectedAdventure, setSelectedAdventure] = useState<string>('None');
   const [adventureParams, setAdventureParams] = useState<string>('None');
   const [loading, setLoading] = useState<boolean>(true);
   const [adventureLoading, setAdventureLoading] = useState<boolean>(false);
@@ -40,7 +40,7 @@ export default function PlayerForm({ onSubmit }: PlayerFormProps) {
       return;
     }
     
-    if (!selectedAdventure) {
+    if (selectedAdventure === "None") {
       alert("Please select an adventure.")
       return;
     }

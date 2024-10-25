@@ -1,9 +1,12 @@
 import os
+import requests
 from game_master import GameMaster
 from index import list_available_lit, build_index
 from fastapi import FastAPI, HTTPException, Form, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from models import extractor_model, classification_model, image_generation_invoke_url, image_generation_headers
+from utils import classify_action, get_visual_scene_description
 
 from image import test_image
 
@@ -44,6 +47,7 @@ game_master = None
 current_player = None
 current_adventure = None
 current_params = None
+current_scenario = None
 
 @app.get("/api/get_adventures")
 async def get_adventures():
@@ -77,26 +81,67 @@ async def generate_start_response():
   global current_player
   global current_adventure
   global current_params
+  global current_scenario
 
   response = game_master.chat_engine.chat(f"Start the game with Player named {current_player} in the world of {current_adventure}. Additional parameters for the adventure: {current_params}.")
+  current_scenario = str(response)
   return {"output": str(response)}
 
+"""
+@app.post("/api/generate_response")
+async def generate_(player_input: PlayerInput):
+  action_type = classify_action(player_input)
+
+  if action_type == 'text':
+    generate_llm_response(player_input)
+  if action_type == 'vision':
+    generate_llm_response(player_input)
+    generate_image_response(get_visual_scene_description)
+
+"""
 
 @app.post("/api/generate_llm_response")
 async def generate_llm_response(player_input: PlayerInput):
   global game_master
+  global current_scenario
 
   player_response = player_input.player_action
   
   response = game_master.chat_engine.chat(f"Player Response: {player_response}")
+  current_scenario = str(response)
+
+  
   return {"output": str(response)}
 
-@app.post("/api/generate_image_response")
-def generate_image_response(image_desc: ImageDescription):
-  ###########################
+@app.get("/api/describe_visuals")
+def describe_visuals():
+  global current_scenario
 
-  ###########################
-  return {"base64": test_image}
+  if current_scenario:
+    return get_visual_scene_description(current_scenario)
+
+  else:
+    raise HTTPException(status_code=400, detail=f"Cannot generate visuals.")
+
+@app.get("/api/generate_image_response")
+def generate_image_response():
+  description = str(get_visual_scene_description(current_scenario))
+  prompt = f"An illustration of {description}"
+  invoke_url = image_generation_invoke_url
+  headers = image_generation_headers
+  payload = {
+      "prompt": prompt,
+      "cfg_scale": 5,
+      "aspect_ratio": "16:9",
+      "seed": 0,
+      "steps": 50,
+      "negative_prompt": ""
+  }
+  response = requests.post(invoke_url, headers=headers, json=payload)
+  response.raise_for_status()
+  response_body = response.json()
+
+  return {"base64": response_body["image"]}
 
 def conclude_adventure():
   return None
@@ -107,11 +152,13 @@ async def reset_state():
     global current_player
     global current_adventure
     global current_params
+    global current_scenario
 
     game_master = None
     current_player = None
     current_adventure = None
     current_params = None
+    current_scenario = None
 
     return{"Output": "State reset."}
 
