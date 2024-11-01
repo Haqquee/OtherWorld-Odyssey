@@ -16,12 +16,12 @@ nvidia_api_key = os.getenv("NVIDIA_API_KEY")
 """
 NVIDIA NIM
 """
-
+"""
 #RAG embedding model
 embedding_model = NVIDIAEmbedding(model="NV-Embed-QA", truncate="END")
 
 #Core Model used for the game master (ideally, a large language model with creative text generation capabilities)
-language_generation_model = NVIDIA(model="meta/llama-3.1-70b-instruct")
+language_generation_model = NVIDIA(model="meta/llama-3-8b-instruct")
 
 #Model used for basic query classification (a smaller language model is applicable in this case)
 classification_model = NVIDIA(model="meta/llama-3.2-1b-instruct")
@@ -36,13 +36,13 @@ image_generation_headers = {
 }
 
 speech_generation_model = None
-
+"""
 
 """
 LOCAL MODELS (FOR TESTING PURPOSES)
 """
 
-"""
+
 # RAG embedding model
 embedding_model = HuggingFaceEmbedding(
         model_name="BAAI/bge-small-en-v1.5"
@@ -64,8 +64,10 @@ classification_model = Ollama(
   )
 
 #Image generation model (from NVIDIA NIM API)
-#image_generation_invoke_url = "https://ai.api.nvidia.com/v1/genai/stabilityai/sdxl-turbo" #Model: SDXL-Turbo
-
+image_generation_invoke_url = "https://ai.api.nvidia.com/v1/genai/stabilityai/sdxl-turbo" #Model: SDXL-Turbo
+image_generation_headers = {
+    "Authorization": f"Bearer {nvidia_api_key}",
+    "Accept": "application/json",
+}
 speech_generation_model = None
 
-"""

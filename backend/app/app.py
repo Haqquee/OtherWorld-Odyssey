@@ -87,18 +87,24 @@ async def generate_start_response():
   current_scenario = str(response)
   return {"output": str(response)}
 
-"""
 @app.post("/api/generate_response")
 async def generate_(player_input: PlayerInput):
-  action_type = classify_action(player_input)
+  action_type = await classify_action(player_input)
 
-  if action_type == 'text':
-    generate_llm_response(player_input)
   if action_type == 'vision':
-    generate_llm_response(player_input)
-    generate_image_response(get_visual_scene_description)
+    text_response = await generate_llm_response(player_input)
+    image_response = await generate_image_response()
+  
+    return{"type": action_type, 
+           "output": text_response["output"], 
+           "base64": image_response["base64"]}
+    #generate_image_response(get_visual_scene_description)
+  else:
+    text_response = await generate_llm_response(player_input)
+    return{"type": action_type, 
+           "output": text_response["output"]}
 
-"""
+
 
 @app.post("/api/generate_llm_response")
 async def generate_llm_response(player_input: PlayerInput):
@@ -114,7 +120,7 @@ async def generate_llm_response(player_input: PlayerInput):
   return {"output": str(response)}
 
 @app.get("/api/describe_visuals")
-def describe_visuals():
+async def describe_visuals():
   global current_scenario
 
   if current_scenario:
@@ -123,6 +129,12 @@ def describe_visuals():
   else:
     raise HTTPException(status_code=400, detail=f"Cannot generate visuals.")
 
+
+@app.get("/api/generate_image_response")
+async def generate_image_response():
+  return {"base64": test_image}
+
+"""
 @app.get("/api/generate_image_response")
 def generate_image_response():
   description = str(get_visual_scene_description(current_scenario))
@@ -142,6 +154,8 @@ def generate_image_response():
   response_body = response.json()
 
   return {"base64": response_body["image"]}
+  #return {"base64": response_body["image"]}
+"""
 
 def conclude_adventure():
   return None
@@ -162,19 +176,4 @@ async def reset_state():
 
     return{"Output": "State reset."}
 
-
-
-  
-
-
-"""
-response = chat_engine.chat("Start the game with Player named Mervin.")
-print(response)
-
-
-while True:
-    user_input = input("Player: ")
-    print(chat_engine.chat(user_input))
-    
-"""
 

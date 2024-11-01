@@ -17,7 +17,7 @@ export default function PromptInterface() {
       try {
         const res = await fetch("http://127.0.0.1:8000/api/start_adventure");
         const data = await res.json();
-        setScenarioText((prevText) => [...prevText, data.output]);
+        setScenarioText((prevText) => [...prevText, {text: data.output, image: null}]);
         setAdventureLoading(false);
         
       } catch (err) {
@@ -36,7 +36,7 @@ export default function PromptInterface() {
     if (playerInput.trim()) {
       setPlayerInput("");
       try {
-        const res = await fetch("http://127.0.0.1:8000/api/generate_llm_response", {
+        const res = await fetch("http://127.0.0.1:8000/api/generate_response", {
           method: 'POST', 
           headers: {
             "Content-Type": "Application/JSON",
@@ -45,7 +45,12 @@ export default function PromptInterface() {
         });
   
         const data = await res.json();
-        setScenarioText((prevText) => [...prevText, data.output]);
+        const newScenarioItem = {
+          text: data.output,
+          image: data.base64 ? `data:image/png;base64,${data.base64}` : null
+        };
+
+        setScenarioText((prevText) => [...prevText, newScenarioItem]);
         setPlayerInput("");
 
       } catch (err) {
@@ -142,33 +147,39 @@ export default function PromptInterface() {
 
       {/* Scenario Text */}
       {scenarioText.length > 0 ? (
-        scenarioText.map((text, index) => (
-        <div key={index} className="mb-6">
-          {text.type === "image" ? (
-            <div>
-              <img
-                src={text.src}
-                alt={`Scenario image ${index}`}
-                className="w-full h-auto object-cover grayscale border-8 border-black border-double scale-100"/>
-            </div>
-          ) : (
-            <p className="text-xl leading-loose">{text}</p>
-          )}
-        </div>
+        scenarioText.map((item, index) => (
+          <div key={index} className="mb-6">
+            {/* Always render the text */}
+            <p className="text-xl leading-loose">{item.text}</p>
+            
+            {/* Render the image if it exists */}
+            {item.image && (
+              <div>
+                <img
+                  src={item.image}
+                  alt={`Scenario image ${index}`}
+                  className="w-full h-auto object-cover grayscale border-8 border-black border-double scale-100"
+                />
+              </div>
+            )}
+          </div>
         ))
       ) : (
         <p className="text-xl leading-loose"></p>
       )}
+
       {textLoading && (
         <div className="">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-4 border-b-4 border-black"></div>
+          <div className="animate-spin rounded-full h-32 w-32 border-t-4 border-b-4 border-black"></div>
         </div>
       )}
+
       {imageLoading && (
         <div className="">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-4 border-b-4 border-black"></div>
+          <div className="animate-spin rounded-full h-32 w-32 border-t-4 border-b-4 border-black"></div>
         </div>
       )}
+      
       </div>
           
     </div>
