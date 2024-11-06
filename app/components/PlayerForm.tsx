@@ -8,7 +8,6 @@ interface PlayerFormProps {
 export default function PlayerForm({ onSubmit }: PlayerFormProps) {
   const [playerName, setPlayerName] = useState<string>('');
   const [filesList, setFilesList] = useState<string[]>([]);
-  // const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [selectedAdventure, setSelectedAdventure] = useState<string>('None');
   const [adventureParams, setAdventureParams] = useState<string>('None');
   const [loading, setLoading] = useState<boolean>(true);

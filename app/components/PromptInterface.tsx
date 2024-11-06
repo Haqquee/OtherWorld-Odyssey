@@ -1,10 +1,11 @@
 import { error } from "console";
 import React, { useEffect, useState, useRef } from "react";
-import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
 export default function PromptInterface() {
 
+  
+  const [showInstructions, setShowInstructions] = useState(false);
   const [playerInput, setPlayerInput] = useState<string>('');
   const [scenarioText, setScenarioText] = useState<any[]>([]);
   const [scenarioImage, setScenarioImage] = useState('');
@@ -13,6 +14,10 @@ export default function PromptInterface() {
   const [imageLoading, setImageLoading] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const adventurePageRef = useRef<HTMLDivElement | null>(null);
+  
+  const toggleInstructions = () => {
+    setShowInstructions(!showInstructions);
+  };
 
   useEffect(() => {
     async function startAdventure() {
@@ -84,66 +89,28 @@ export default function PromptInterface() {
     }
   };
 
-  {/*
-  const generateImage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setImageLoading(true);
-
-    try {
-      const res = await fetch("http://127.0.0.1:8000/api/generate_image_response", {
-        method: 'GET', 
-      });
-      
-      const data = await res.json();
-      const image = {
-        type: "image",
-        src: `data:image/png;base64,${data.base64}`,
-      };
-
-      setScenarioText((prevText) => [...prevText, image]);
-
-    } catch (err) {
-      console.error("Error fetching image response: ", err);
-
-    } finally {
-      setImageLoading(false);
-    }
-  }
-
-  
-  const generateImage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setImageLoading(true);
-
-    try {
-      const res = await fetch("http://127.0.0.1:8000/api/generate_image_response", {
-        method: 'POST', 
-        headers: {
-          "Content-Type": "Application/JSON",
-        },
-        body: JSON.stringify({ image_description: playerInput })
-      });
-      
-      const data = await res.json();
-      const image = {
-        type: "image",
-        src: `data:image/png;base64,${data.base64}`,
-      };
-
-      setScenarioText((prevText) => [...prevText, image]);
-
-    } catch (err) {
-      console.error("Error fetching image response: ", err);
-
-    } finally {
-      setImageLoading(false);
-    }
-  }
-    */}
-  
-
   return (
     <div className="h-screen fixed flex justify-center gap-24 pt-48">
+      {/* Game Instructions */}
+
+      {showInstructions && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75">
+          <div className="bg-yellow-400 text-black w-1/2 p-8 rounded shadow-lg">
+            <h2 className="text-2xl font-bold mb-4">Game Instructions</h2>
+            <p className="text-lg mb-4">
+              The game uses natural language prompts as input for your actions. You can move, talk, observe, etc. Place yourself as a character within the narrative and enjoy the freedom to play how you want.
+            </p>
+            <ul className="list-disc pl-5 space-y-2 text-lg">
+              <li>You can talk from 3rd person, or 1st person perspectives.</li>
+              <li>Try using quotation marks if you want to make direct speeches *not necessary but makes it more clear for the LLM for interpret.</li>
+              <li>Using language that implies perception 'look', 'observe', etc. will make the game call image generation model to retrive visuals.</li>
+            </ul>
+            <button
+              onClick={toggleInstructions}
+              className="mt-6 bg-white black p-2 rounded">Close</button>
+          </div>
+        </div>
+      )}
 
       {/* Player-Input Interface */}
     {adventureLoading && (
@@ -161,13 +128,10 @@ export default function PromptInterface() {
             className="rounded-md bg-black bg-opacity-50 text-white text-xl border-2 p-2 mb-4"  
           />
           <button type="submit" className="bg-white text-black rounded-md p-2 m-2 w-1/4 text-l hover:bg-yellow-400 hover:scale-105">Take Action</button>
-          <button onClick={captureAdventurePage} className="mt-10 bg-yellow-400 text-white rounded-md p-2 m-2 w-1/4 text-l hover:bg-yellow-400 hover:scale-105"> Save Adventure </button>
-          <button onClick={captureAdventurePage} className=" bg-yellow-400 text-white rounded-md p-2 m-2 w-1/4 text-l hover:bg-yellow-400 hover:scale-105"> Save Adventure </button>
-        </form>
-        
+          <button type="button" onClick={toggleInstructions} className="mt-10 bg-yellow-400 text-black rounded-md p-2 m-2 w-1/4 text-l hover:bg-yellow-400 hover:scale-105"> How To Play </button>
+          <button type="button" onClick={captureAdventurePage} className=" bg-yellow-400 text-black rounded-md p-2 m-2 w-1/4 text-l hover:bg-yellow-400 hover:scale-105"> Save Adventure </button>
+        </form>        
       </div>
-
-      
 
       <div ref= {adventurePageRef} className="h-screen w-2/3 bg-page_background bg-repeat-y bg-local p-40 pb-96 text-black overflow-y-auto border-8 border-black border-double">
       <h2 className="text-4xl mb-10">The Adventure So Far...</h2>
