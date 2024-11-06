@@ -16,16 +16,27 @@ nvidia_api_key = os.getenv("NVIDIA_API_KEY")
 """
 NVIDIA NIM
 """
-"""
+
 #RAG embedding model
 embedding_model = NVIDIAEmbedding(model="NV-Embed-QA", truncate="END")
 
 #Core Model used for the game master (ideally, a large language model with creative text generation capabilities)
-language_generation_model = NVIDIA(model="meta/llama-3-8b-instruct")
+language_generation_model = NVIDIA(model="meta/llama3-70b-instruct")
+# meta/llama3-8b-instruct
+# meta/llama3-70b-instruct /
+# meta/llama-3.1-8b-instruct
+# nvidia/llama-3.1-nemotron-51b-instruct
+# nvidia/llama-3.1-nemotron-70b-instruct
+# meta/llama-3.1-405b-instruct
+
+
 
 #Model used for basic query classification (a smaller language model is applicable in this case)
-classification_model = NVIDIA(model="meta/llama-3.2-1b-instruct")
-extractor_model = NVIDIA(model="meta/llama-3.2-1b-instruct")
+classification_model = NVIDIA(model="meta/llama-3.2-3b-instruct")
+extractor_model = NVIDIA(model="meta/llama-3.2-3b-instruct")
+# ibm/granite-3.0-3b-a800m-instruct
+# meta/llama-3.2-3b-instruct
+# meta/llama3-8b-instruct
 
 #Image generation model (from NVIDIA NIM API)
 #Stable Diffusion 3 Medium
@@ -36,12 +47,12 @@ image_generation_headers = {
 }
 
 speech_generation_model = None
-"""
+
 
 """
 LOCAL MODELS (FOR TESTING PURPOSES)
 """
-
+"""
 
 # RAG embedding model
 embedding_model = HuggingFaceEmbedding(
@@ -71,3 +82,4 @@ image_generation_headers = {
 }
 speech_generation_model = None
 
+"""

@@ -129,14 +129,16 @@ async def describe_visuals():
   else:
     raise HTTPException(status_code=400, detail=f"Cannot generate visuals.")
 
-
+"""
 @app.get("/api/generate_image_response")
 async def generate_image_response():
   return {"base64": test_image}
 
 """
+
+
 @app.get("/api/generate_image_response")
-def generate_image_response():
+async def generate_image_response():
   description = str(get_visual_scene_description(current_scenario))
   prompt = f"An illustration of {description}"
   invoke_url = image_generation_invoke_url
@@ -155,7 +157,7 @@ def generate_image_response():
 
   return {"base64": response_body["image"]}
   #return {"base64": response_body["image"]}
-"""
+
 
 def conclude_adventure():
   return None

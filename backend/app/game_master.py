@@ -1,6 +1,5 @@
 from models import language_generation_model
 from prompt import game_context
-from prompt import game_context_2
 from index import build_index
 from memory import init_memory
 
@@ -12,7 +11,7 @@ class GameMaster:
     llm=language_generation_model,
     memory=init_memory(),
     system_prompt=(
-        game_context_2
+        game_context
       ),
     )
   

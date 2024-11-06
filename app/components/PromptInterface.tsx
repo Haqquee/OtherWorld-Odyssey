@@ -1,5 +1,7 @@
 import { error } from "console";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 export default function PromptInterface() {
 
@@ -10,6 +12,7 @@ export default function PromptInterface() {
   const [textLoading, setTextLoading] = useState<boolean>(false);
   const [imageLoading, setImageLoading] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const adventurePageRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     async function startAdventure() {
@@ -62,6 +65,26 @@ export default function PromptInterface() {
       }
     }
   }
+
+  const captureAdventurePage = async () => {
+    if (adventurePageRef.current) {
+      const element = adventurePageRef.current;
+      const originalHeight = element.style.height;
+      const originalOverflow = element.style.overflow;
+      element.style.height = `${element.scrollHeight}px`;
+      element.style.overflow = "visible";
+      const canvas = await html2canvas(element, { scale: 2 });
+      const imgData = canvas.toDataURL("image/png");
+      element.style.height = originalHeight;
+      element.style.overflow = originalOverflow;
+      const link = document.createElement("a");
+      link.href = imgData;
+      link.download = "SavedOdyssey.png";
+      link.click();
+    }
+  };
+
+  {/*
   const generateImage = async (e: React.FormEvent) => {
     e.preventDefault();
     setImageLoading(true);
@@ -87,7 +110,7 @@ export default function PromptInterface() {
     }
   }
 
-  {/*
+  
   const generateImage = async (e: React.FormEvent) => {
     e.preventDefault();
     setImageLoading(true);
@@ -121,6 +144,8 @@ export default function PromptInterface() {
 
   return (
     <div className="h-screen fixed flex justify-center gap-24 pt-48">
+
+      {/* Player-Input Interface */}
     {adventureLoading && (
         <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center">
         <div className="animate-spin rounded-full h-32 w-32 border-t-4 border-b-4 border-yellow-400"></div>
@@ -136,23 +161,23 @@ export default function PromptInterface() {
             className="rounded-md bg-black bg-opacity-50 text-white text-xl border-2 p-2 mb-4"  
           />
           <button type="submit" className="bg-white text-black rounded-md p-2 m-2 w-1/4 text-l hover:bg-yellow-400 hover:scale-105">Take Action</button>
-          <button type="button" onClick={generateImage} className="bg-white text-black rounded-md p-2 m-2 w-1/4 text-l hover:bg-yellow-400 hover:scale-105">Use Vision</button>
+          <button onClick={captureAdventurePage} className="mt-10 bg-yellow-400 text-white rounded-md p-2 m-2 w-1/4 text-l hover:bg-yellow-400 hover:scale-105"> Save Adventure </button>
+          <button onClick={captureAdventurePage} className=" bg-yellow-400 text-white rounded-md p-2 m-2 w-1/4 text-l hover:bg-yellow-400 hover:scale-105"> Save Adventure </button>
         </form>
+        
       </div>
 
       
 
-      <div className="h-screen w-2/3 bg-page_background bg-repeat-y bg-local p-40 pb-96 text-black overflow-y-auto border-8 border-black border-double">
-      <h2 className="text-4xl mb-10">Your Adventure...</h2>
+      <div ref= {adventurePageRef} className="h-screen w-2/3 bg-page_background bg-repeat-y bg-local p-40 pb-96 text-black overflow-y-auto border-8 border-black border-double">
+      <h2 className="text-4xl mb-10">The Adventure So Far...</h2>
 
-      {/* Scenario Text */}
+      {/* Scenario Text/Image */}
       {scenarioText.length > 0 ? (
         scenarioText.map((item, index) => (
           <div key={index} className="mb-6">
-            {/* Always render the text */}
             <p className="text-xl leading-loose">{item.text}</p>
-            
-            {/* Render the image if it exists */}
+      
             {item.image && (
               <div>
                 <img
