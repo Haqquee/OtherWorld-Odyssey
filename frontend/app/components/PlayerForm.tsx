@@ -113,7 +113,7 @@ return(
         <div className="pb-5">
           <input
             type="text"
-            placeholder="Additional prompts for adventure customization (e.g. 'Generate scenarios in the style of a horror adventure'.)"
+            placeholder="*Optional* prompts for adventure customization (e.g. 'Generate scenarios in the style of a horror adventure'.)"
             value={adventureParams}
             onChange={(e) => setAdventureParams(e.target.value)}
             className="border p-2 w-full text-black"
