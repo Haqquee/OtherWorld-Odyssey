@@ -2,7 +2,6 @@
 from prompt import query_classifier
 from models import extractor_model
 from models import classification_model
-import ollama
 
 # Describes the visuals of a scenario from a first person perspective, for text-to-image generation
 def get_visual_scene_description(scenario_text: str):

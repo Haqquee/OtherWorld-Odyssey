@@ -1,6 +1,8 @@
-fastapi==0.115.0
+fastapi[standard]==0.115.0
 requests==2.32.3
 python-dotenv==1.0.1
 numpy==1.26.4
 llama-index==0.11.9
+llama-index-embeddings-nvidia==0.2.3
+llama-index-llms-nvidia==0.2.6
 
