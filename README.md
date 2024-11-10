@@ -2,7 +2,7 @@
 ![Project Picture](https://github.com/Haqquee/OtherWorld-Odyssey/blob/master/frontend/public/OtherWorld-Odyssey.PNG)
 
 # NVIDIA and LlamaIndex Developer Contest
-This application was developed as a part of the NVIDIA and LlamaIndex Developer Contest.
+This application was developed as a part of the [NVIDIA and LlamaIndex Developer Contest](https://developer.nvidia.com/llamaindex-developer-contest). See a demo of the project here: [Demo Video](https://youtu.be/wM9IuP209Mw)
 
 # Table of Contents
 - [Introduction](#introduction)
