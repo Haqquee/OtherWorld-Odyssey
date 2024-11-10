@@ -1,4 +1,20 @@
 # OtherWorld Odyssey
+# NVIDIA and LlamaIndex Developer Contest
+This application was developed as a part of the NVIDIA and LlamaIndex Developer Contest.
+
+# Table of Contents
+- [Introduction](#introduction)
+- [How it Works](#how-it-works)
+- [Project Structure](#project-structure)
+- [Installation and Use](#installation-and-use)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+- [How to Play](#how-to-play)
+  - [Disclaimer and Guidelines](#disclaimer-and-guidelines)
+  - [Instructions](#instructions)
+- [Troubleshooting Potential Issues](#troubleshooting-potential-issues)
+- [Current Limitations and Future Improvements](#current-limitations-and-future-improvements)
+
 # Introduction
 OtherWorld Odyssey is an interactive adventure/storytelling application that draws inpsiration from classic role-playing games, and text-based computer games where the player's choices shaped the narrative of their adventures. The application was developed with the aim to use the creative power of Generative AI to create immersive and interactive adventures. It uses Retrieval Augmented Generation (RAG) to allow players to upload literature of their choice (novels, short stoires and other documents), and embark on a journey in an alternate version of the story, while becoming a part of its narrative. Players guide the adventure by taking actions and making decisions, while a 'Game Master' in the form of an AI Agent, interprets the inputs and takes actions to dynamically alter the outcome of the scenarios.
 
@@ -48,9 +64,9 @@ project-root/
 - Windows, Linux, or Mac (tested on Windows and Linux)
 
 ## Installation
-1. Clone this repo, then navigate to the project folder:
+1. Clone this repository, then navigate to the project folder:
 ```
-git clone https://github.com/Haqquee/OtherWorld-Odyssey
+git clone https://github.com/Haqquee/OtherWorld-Odyssey.git
 cd OtherWorld-Odyssey
 ```
 2. From the project root, install dependencies for the backend:
@@ -64,29 +80,32 @@ npm install
 ```
 4. Initialize NVIDIA NIM API key in a .env file in the project root (as shown):
 ```
-NVIDIA_API_KEY=YOUR_API_KEY
+NVIDIA_API_KEY=your_api_key
 ```
-
-5. Start the next.js frontend server (ensure that the server starts on localhost:3000):
-```
-cd frontend
-npm run dev
-```
-
-7. Start the backend for inference, from the project root folder (ensure that the server starts on localhost:8000):
+5. Start the backend for inference, from the project root folder (ensure that the server starts on default port 8000):
 ```
 fastapi run app.py
 ```
 
-9. At this point the app is ready to be used. Upload documents of your choice in the ``` Codex/ ``` folder in the project root. Documents could be in the form of .txt, .pdf, etc. Feel free to upload various stories (of various sizes) of your choice. This application was based around the idea of using short stories or novels as the retrieval documents. A couple of sample short stories have been uploaded that you can test.
+6. While the backend is running, start the Next.js frontend server seperately (ensure that the server starts on default port 3000).
+- To run the app in a development environment:
+```
+cd frontend
+npm run dev
+```
+- To run the app in a production environment, first build the application, then start it as shown:
+```
+cd frontend
+npm run build
+npm start
+```
+
+7. At this point the app is ready to be used. Upload documents of your choice in the ``` Codex/ ``` folder in the project root. Documents could be in the form of .txt, .pdf, etc. Feel free to upload various stories (of various sizes) of your choice. This application was based around the idea of using short stories or novels as the retrieval documents. A couple of sample short stories have been uploaded that you can test.
 
 10. Open up the application through your browser:
 ```
 http://localhost:3000
 ```
-## Troubleshooting potential issues
-
-
 
 ## How To Play
 
@@ -117,5 +136,13 @@ While the AI models used for this application contains some moderation, you’re
 
 - 'Save Adventure' button on the game screen downloads a copy of the current adventure.
 
+## Troubleshooting potential issues
+
+
 # Current Limitations and Future Improvements
 
+Since this is was a contest project, I had to limit the overall scope of the project, to ensure that I was able to finish it on time. This means there are a couple of features that I had to ignore, but I could implement in the future to create a more robust experience.
+- Lack of guardrails: Due to the creative freedom given to the players in this application, I did not get the time to come up with proper implementation of guardrails, without significantly limiting the way players interact with their adventures. But this could be done in the future.
+- Lack of objectives: Currently, there are no end goals or objectives for the gameplay. This means players can continue playing indefinitely (only limited by the LLM's performance). However, feature additions such as player health, and other objectives for the player to work towards can change this.
+- Implementation of a wide variety of action types: Currently the game only has two types of actions, vision based on non-vision based, where the type of action is determined by the Agentic AI. I want to create a more dynamic system, where the AI can choose between a more diverse set of actions to classify, and respond to each of them accordingly. For example, vision based actions will call image generation model to create visuals (the application already does this), dialogue based actions will call speech model for narration. Furthermore, I would also like to add an audio generation model that creates audios based on the scenario that the player is currently in, and the actions they do (sound of walking, runnning, etc.).
+- Basic AI interaction: The interaction with the language model is still relatively simple. While it can create scenarios based on player input, there is room for improvement in how it understands and reacts to more complex user actions and emotional tones
